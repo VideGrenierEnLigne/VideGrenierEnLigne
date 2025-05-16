@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: ../../
+      dockerfile: ./docker/dev-env/Dockerfile
+    container_name: videgrenier_web_dev
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../:/var/www
+      - ../../public:/var/www/html
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
+
+
+  db:
+    image: mysql:8
+    container_name: videgrenier_db_dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pwd
+      MYSQL_DATABASE: videgrenierenligne
+      MYSQL_USER: webapp
+      MYSQL_PASSWORD: webapp_pwd
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s  
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../../sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+volumes:
+  db_data:
