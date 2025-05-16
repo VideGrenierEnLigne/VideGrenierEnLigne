@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Articles;
 use \Core\View;
 use Exception;
+use App\Utility\Flash;
 
 /**
  * Home controller
@@ -21,6 +22,8 @@ class Home extends \Core\Controller
     public function indexAction()
     {
 
-        View::renderTemplate('Home/index.html', []);
+    View::renderTemplate('Home/index.html', [
+    'flash' => Flash::getMessages()
+]);
     }
 }
