@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: 'API Produits et Villes'
+  version: 1.0.0
+paths:
+  /api/products:
+    get:
+      tags:
+        - Produits
+      summary: 'Liste des produits triés'
+      description: 'Récupère tous les produits avec un tri optionnel'
+      operationId: e35803db7dc3263e3622538255f4c890
+      parameters:
+        -
+          name: sort
+          in: query
+          description: 'Critère de tri (ex: price, name...)'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Liste des produits'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /api/cities:
+    get:
+      tags:
+        - Villes
+      summary: 'Recherche de villes'
+      description: 'Recherche une ville par nom ou mot-clé'
+      operationId: a0f15af3ba703749030849d863dcb260
+      parameters:
+        -
+          name: query
+          in: query
+          description: 'Terme de recherche pour les villes'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Résultats de la recherche'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /:
+    get:
+      tags:
+        - Pages
+      summary: "Page d'accueil"
+      description: "Affiche la page d'accueil (HTML), utile pour tests manuels ou comme point d'entrée visuel"
+      operationId: 7d67e3620a1d1bc919fa0f61706e7dda
+      responses:
+        '200':
+          description: "Page HTML de l'accueil"
+  /product/add:
+    post:
+      tags:
+        - Produits
+      summary: "Ajout d'un nouveau produit"
+      description: "Affiche le formulaire d'ajout et traite les données envoyées, y compris l'image"
+      operationId: 4f1887e7e2471eb12207fe224ef57ded
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - name
+                - description
+                - picture
+              properties:
+                name:
+                  description: 'Nom du produit'
+                  type: string
+                description:
+                  description: 'Description du produit'
+                  type: string
+                picture:
+                  description: 'Image JPEG ou PNG'
+                  type: string
+                  format: binary
+              type: object
+      responses:
+        '302':
+          description: 'Redirection vers la page du produit après ajout'
+        '400':
+          description: 'Erreur de validation des données'
+  '/product/{id}':
+    get:
+      tags:
+        - Produits
+      summary: 'Afficher un produit'
+      description: 'Affiche une page HTML contenant les détails du produit, les vues sont incrémentées'
+      operationId: f445e04846c89947cd822920281c420c
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'ID du produit à afficher'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Page HTML du produit'
+        '404':
+          description: 'Produit non trouvé'
+  /login:
+    post:
+      tags:
+        - Utilisateurs
+      summary: "Connexion de l'utilisateur"
+      description: 'Affiche la page de connexion et traite les identifiants'
+      operationId: d4181362f8fbe88f6a6105eb4561f5f0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                remember:
+                  type: string
+                  enum: ['on', 'off']
+              type: object
+      responses:
+        '302':
+          description: 'Redirection vers /account si succès'
+        '401':
+          description: 'Échec de connexion'
+  /register:
+    post:
+      tags:
+        - Utilisateurs
+      summary: "Inscription d'un nouvel utilisateur"
+      description: "Affiche et traite la page d'inscription utilisateur"
+      operationId: 1bbc8782abb5c285c2903931d316b6a2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - username
+                - email
+                - password
+                - password-check
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password-check:
+                  type: string
+              type: object
+      responses:
+        '302':
+          description: 'Redirection vers /account'
+        '400':
+          description: 'Erreurs de validation'
+  /account:
+    get:
+      tags:
+        - Utilisateurs
+      summary: 'Page du compte utilisateur'
+      description: "Affiche la liste des articles de l'utilisateur connecté"
+      operationId: 0ff1c249453bcd21492db9a815228f41
+      responses:
+        '200':
+          description: 'Page HTML du compte'
+  /logout:
+    get:
+      tags:
+        - Utilisateurs
+      summary: Déconnexion
+      description: "Supprime la session et les cookies de l'utilisateur"
+      operationId: e763d7df9702a52315ca621d541cedc1
+      responses:
+        '302':
+          description: "Redirection vers la page d'accueil"
+tags:
+  -
+    name: Produits
+    description: 'Gestion des produits'
+  -
+    name: Villes
+    description: 'Recherche dans la base des villes'
+  -
+    name: Pages
+    description: 'Pages HTML classiques'
+  -
+    name: Utilisateurs
+    description: 'Authentification, inscription, compte, etc.'
