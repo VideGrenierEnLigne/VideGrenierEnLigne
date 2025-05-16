@@ -6,11 +6,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-use App\Config;
 use App\Model\UserRegister;
 use App\Models\Articles;
+use App\Utility\Flash;
 use App\Utility\Hash;
-use App\Utility\Session;
 use \Core\View;
 use Exception;
 use Dotenv;
@@ -49,7 +48,9 @@ class User extends \Core\Controller
             header('Location: /account');
         }
 
-        View::renderTemplate('User/login.html');
+        View::renderTemplate('User/login.html', [
+            'flash' => Flash::getMessages()
+        ]);
     }
 
     /**
@@ -64,7 +65,7 @@ class User extends \Core\Controller
             if ($data['password'] !== $data['password-check']) {
                 // Exemple : stocker message d'erreur simple (à remplacer par flash ou autre)
                 $error = "Les mots de passe ne correspondent pas.";
-                View::renderTemplate('User/register.html', ['error' => $error, 'data' => $data]);
+                View::renderTemplate('User/register.html', ['error' => $error, 'data' => $data,'flash' => Flash::getMessages()]);
                 return;
             }
 
@@ -81,18 +82,24 @@ class User extends \Core\Controller
                     exit;
                 } else {
                     $error = "Erreur lors de la création de l'utilisateur.";
-                    View::renderTemplate('User/register.html', ['error' => $error, 'data' => $data]);
+                    View::renderTemplate('User/register.html', ['error' => $error, 'data' => $data, 'flash' => Flash::getMessages()]);
                     return;
                 }
             } catch (\Exception $ex) {
                 $error = $ex->getMessage();
-                View::renderTemplate('User/register.html', ['error' => $error, 'data' => $data]);
+                View::renderTemplate('User/register.html', [
+                    'error' => $error,
+                    'data' => $data,
+                    'flash' => Flash::getMessages()
+                ]);
                 return;
             }
         }
 
         // Si pas de POST, juste afficher la page d'inscription
-        View::renderTemplate('User/register.html');
+        View::renderTemplate('User/register.html', [
+            'flash' => Flash::getMessages()
+        ]);
     }
     /**
      * Affiche la page du compte
@@ -102,7 +109,8 @@ class User extends \Core\Controller
         $articles = Articles::getByUser($_SESSION['user']['id']);
 
         View::renderTemplate('User/account.html', [
-            'articles' => $articles
+            'articles' => $articles,
+            'flash' => Flash::getMessages()
         ]);
     }
 
@@ -150,8 +158,7 @@ class User extends \Core\Controller
                 'id' => $user['id'],
                 'username' => $user['username'],
             );
-
-            if (!empty($data['remember'])) {
+            if ($data['remember'] == "on") {
                 $userId = $user['id'];
                 $expires = time() + 30 * 24 * 60 * 60; // 30 jours
 
