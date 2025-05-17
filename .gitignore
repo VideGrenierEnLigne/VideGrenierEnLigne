@@ -3,3 +3,5 @@ vendor
 composer.lock
 node_modules
 .env
+prod.env
+prod-fetch
