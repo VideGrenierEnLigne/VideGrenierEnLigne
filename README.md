@@ -46,10 +46,3 @@ Les modèles sont utilisés pour récupérer ou stocker des données dans l'appl
 ```php
 $db = static::getDB();
 ```
-
-## Swagger
-Générer le fichier swagger.json qui alimente la doc
-
-```cmd
-./vendor/bin/openapi app/ -o public/docs/swagger.json
-```

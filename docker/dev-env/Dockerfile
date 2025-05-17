@@ -12,8 +12,6 @@ WORKDIR /var/www
 
 COPY . /var/www
 
-RUN composer update
-
 RUN composer install
 
 RUN rm -rf /var/www/html && ln -s /var/www/public /var/www/html
