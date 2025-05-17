@@ -1,30 +1,43 @@
 #!/bin/bash
 
-# Aller dans le dossier du script, peu importe où il est lancé
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Go to the script directory, wherever it's launched from
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+clear
 if [ -d "prod-fetch" ]; then
-    echo "prod-fetch folder found. Stopping Docker containers..."
+    echo -e "${CYAN}→ 'prod-fetch' folder found. Stopping Docker containers...${NC}"
 
     docker compose -f ./docker-compose.yml down
     if [ $? -eq 0 ]; then
-        echo "Docker containers stopped successfully."
+        clear
+        echo -e "${GREEN}✓ Docker containers stopped successfully.${NC}"
     else
-        echo "Error: Failed to stop Docker containers."
+        clear
+        echo -e "${RED}✗ Error: Failed to stop Docker containers.${NC}"
         exit 1
     fi
 
-    echo "Removing prod-fetch folder..."
+    echo -e "${CYAN}→ Removing 'prod-fetch' folder...${NC}"
     rm -rf prod-fetch
     if [ $? -eq 0 ]; then
-        echo "prod-fetch folder removed successfully."
+        clear
+        echo -e "${GREEN}✓ 'prod-fetch' folder removed successfully.${NC}"
     else
-        echo "Error: Failed to remove prod-fetch folder."
+        clear
+        echo -e "${RED}✗ Error: Failed to remove 'prod-fetch' folder.${NC}"
         exit 1
     fi
 
-    echo "Cleanup done."
+    echo -e "${GREEN}✓ Cleanup done.${NC}"
 else
-    echo "prod-fetch folder not found. Production does not seem to be running."
+    clear
+    echo -e "${YELLOW}⚠️  'prod-fetch' folder not found. Production does not seem to be running.${NC}"
 fi
