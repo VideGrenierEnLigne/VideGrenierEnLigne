@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  web-dev:
+    build:
+      context: ../../
+      dockerfile: ./docker/dev-env/Dockerfile
+    container_name: web_dev
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../:/var/www
+      - ../../public:/var/www/html
+    depends_on:
+      - db-dev
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80" ]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
+    networks:
+      - videgrenier
+    environment:
+      - SECRET_KEY=secret_key
+      - DB_HOST=db-dev
+      - DB_NAME=videgrenierenligne
+      - DB_USER=root
+      - DB_PASSWORD=root_pwd
+  db-dev:
+    image: mariadb:10.9
+    container_name: db_dev
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_pwd
+      - MYSQL_DATABASE=videgrenierenligne
+      - MYSQL_USER=webapp
+      - MYSQL_PASSWORD=webapp_pwd
+    command: 
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping" ]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../../sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+      - "33070:33060"
+    networks:
+      - videgrenier
+volumes:
+  db_data:
+networks:
+  videgrenier:
