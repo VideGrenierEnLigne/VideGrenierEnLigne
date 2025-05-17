@@ -1,4 +1,3 @@
-#!/bin/bash
 
 # Aller dans le dossier du script, peu importe où il est lancé
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,7 +15,7 @@ gh_url="https://${PAT}@github.com/VideGrenierEnLigne/VideGrenierEnLigne.git"
 if [ -d "prod-fetch" ]; then
     echo "Repo already fetch, pulling latest changes on main..."
     cd ./prod-fetch/VideGrenierEnLigne
-    git pull origin main
+    git pull origin develop
     if [ $? -eq 0 ]; then
         echo "Repo successfully updated"
     else
@@ -28,7 +27,7 @@ if [ -d "prod-fetch" ]; then
 else
     mkdir prod-fetch
     cd prod-fetch
-    git clone -b main "$gh_url"
+    git clone -b develop "$gh_url"
     if [ -d "VideGrenierEnLigne" ]; then
         echo "Repo successfully cloned"
         cd VideGrenierEnLigne
@@ -40,6 +39,17 @@ else
     fi
 fi
 
+#Copier le fichier .env pour pas casser la prod
+ENV_SRC_PATH="$SCRIPT_DIR/../../.env"
+ENV_DEST_PATH="$SCRIPT_DIR/prod-fetch/VideGrenierEnLigne/.env"
+
+if [ -f "$ENV_SRC_PATH" ]; then
+    cp "$ENV_SRC_PATH" "$ENV_DEST_PATH"
+    echo ".env file copied from $ENV_SRC_PATH to $ENV_DEST_PATH"
+else
+    echo "Warning: .env file not found at $ENV_SRC_PATH, skipping copy"
+fi
+
 # Installer les dépendances npm et composer
 echo "Installing npm dependencies..."
 npm install
@@ -49,6 +59,11 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Installing composer dependencies..."
+composer update
+if [ $? -ne 0 ]; then
+    echo "Error: composer update failed"
+    exit 1
+fi
 composer install
 if [ $? -ne 0 ]; then
     echo "Error: composer install failed"
@@ -61,7 +76,7 @@ cd "$SCRIPT_DIR"
 echo "Starting Docker containers..."
 docker compose -f ./docker-compose.yml up -d --build
 if [ $? -eq 0 ]; then
-    clear
+    # clear
     echo "Docker containers successfully started"
     docker ps
 else
