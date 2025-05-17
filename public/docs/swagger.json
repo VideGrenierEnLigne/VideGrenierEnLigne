@@ -1,0 +1,836 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Produits et Villes",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Liste des produits triés",
+                "description": "Récupère tous les produits avec un tri optionnel",
+                "operationId": "e35803db7dc3263e3622538255f4c890",
+                "parameters": [
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Critère de tri (ex: price, name...)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des produits",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cities": {
+            "get": {
+                "tags": [
+                    "Villes"
+                ],
+                "summary": "Recherche de villes",
+                "description": "Recherche une ville par nom ou mot-clé",
+                "operationId": "a0f15af3ba703749030849d863dcb260",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Terme de recherche pour les villes",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Résultats de la recherche",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Page d'accueil",
+                "description": "Affiche la page d'accueil (HTML), utile pour tests manuels ou comme point d'entrée visuel",
+                "operationId": "7d67e3620a1d1bc919fa0f61706e7dda",
+                "responses": {
+                    "200": {
+                        "description": "Page HTML de l'accueil"
+                    }
+                }
+            }
+        },
+        "/product/add": {
+            "post": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Ajout d'un nouveau produit",
+                "description": "Affiche le formulaire d'ajout et traite les données envoyées, y compris l'image",
+                "operationId": "4f1887e7e2471eb12207fe224ef57ded",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "picture"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Nom du produit",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Description du produit",
+                                        "type": "string"
+                                    },
+                                    "picture": {
+                                        "description": "Image JPEG ou PNG",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers la page du produit après ajout"
+                    },
+                    "400": {
+                        "description": "Erreur de validation des données"
+                    }
+                }
+            }
+        },
+        "/product/{id}": {
+            "get": {
+                "tags": [
+                    "Produits"
+                ],
+                "summary": "Afficher un produit",
+                "description": "Affiche une page HTML contenant les détails du produit, les vues sont incrémentées",
+                "operationId": "f445e04846c89947cd822920281c420c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du produit à afficher",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Page HTML du produit"
+                    },
+                    "404": {
+                        "description": "Produit non trouvé"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Connexion de l'utilisateur",
+                "description": "Affiche la page de connexion et traite les identifiants",
+                "operationId": "d4181362f8fbe88f6a6105eb4561f5f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "remember": {
+                                        "type": "string",
+                                        "enum": [
+                                            "on",
+                                            "off"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /account si succès"
+                    },
+                    "401": {
+                        "description": "Échec de connexion"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Inscription d'un nouvel utilisateur",
+                "description": "Affiche et traite la page d'inscription utilisateur",
+                "operationId": "1bbc8782abb5c285c2903931d316b6a2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "password-check"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "password-check": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers /account"
+                    },
+                    "400": {
+                        "description": "Erreurs de validation"
+                    }
+                }
+            }
+        },
+        "/account": {
+            "get": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Page du compte utilisateur",
+                "description": "Affiche la liste des articles de l'utilisateur connecté",
+                "operationId": "0ff1c249453bcd21492db9a815228f41",
+                "responses": {
+                    "200": {
+                        "description": "Page HTML du compte"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Déconnexion",
+                "description": "Supprime la session et les cookies de l'utilisateur",
+                "operationId": "e763d7df9702a52315ca621d541cedc1",
+                "responses": {
+                    "302": {
+                        "description": "Redirection vers la page d'accueil"
+                    }
+                }
+            }
+        },
+        "/articles": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Lister les articles",
+                "description": "Retourne une liste d'articles avec un filtre optionnel",
+                "operationId": "116a83a0425d137c8dd82151662b85e4",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filtre de tri (views, data)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des articles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Créer un nouvel article",
+                "description": "Ajoute un nouvel article à la base de données",
+                "operationId": "a0614ea5ea2a07fc3f49e55afe570795",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Titre de l'article",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Description de l'article",
+                                        "type": "string"
+                                    },
+                                    "user_id": {
+                                        "description": "ID de l'utilisateur auteur",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Article créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Article"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Données invalides"
+                    }
+                }
+            }
+        },
+        "/articles/{id}": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Récupérer un article",
+                "description": "Retourne un article par ID",
+                "operationId": "a5129a4b1ae9d9e7e232a29abca33691",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article retourné avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Article"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article non trouvé"
+                    }
+                }
+            }
+        },
+        "/articles/{id}/views": {
+            "patch": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Incrémenter les vues d'un article",
+                "description": "Incrémente le compteur de vues d'un article",
+                "operationId": "34ac721f359a397b50b9c8798c47c24b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Vues incrémentées avec succès"
+                    },
+                    "404": {
+                        "description": "Article non trouvé"
+                    }
+                }
+            }
+        },
+        "/users/{id}/articles": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Récupérer les articles d'un utilisateur",
+                "description": "Retourne les articles associés à un utilisateur",
+                "operationId": "708dcfb0ed1063751fa2341f3b94adb0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Articles de l'utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé"
+                    }
+                }
+            }
+        },
+        "/articles/suggestions": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Récupérer des suggestions d'articles",
+                "description": "Retourne les 10 derniers articles publiés",
+                "operationId": "bab47c3761942a913a9be0d6beab2fe9",
+                "responses": {
+                    "200": {
+                        "description": "Suggestions d'articles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/articles/{id}/picture": {
+            "put": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Ajouter une image à un article",
+                "description": "Associe une image à un article existant",
+                "operationId": "fe3aa57ce9b6d5b22f3b1c00d933eee1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de l'article",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "picture"
+                                ],
+                                "properties": {
+                                    "picture": {
+                                        "description": "Fichier image à associer",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image ajoutée avec succès"
+                    },
+                    "400": {
+                        "description": "Données invalides"
+                    },
+                    "404": {
+                        "description": "Article non trouvé"
+                    }
+                }
+            }
+        },
+        "/cities/search": {
+            "get": {
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "Recherche de villes par nom",
+                "description": "Retourne une liste d'identifiants des villes dont le nom commence par la chaîne donnée",
+                "operationId": "45545b53b8035585b627e3814d971bef",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Début du nom de la ville recherché",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des IDs des villes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Paramètre manquant ou invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Créer un nouvel utilisateur",
+                "description": "Crée un utilisateur avec username, email, password (hashé) et salt",
+                "operationId": "ab86a7992eefe856509c753a786f774c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "salt"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "salt": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "ID du nouvel utilisateur",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur lors de la création de l'utilisateur"
+                    }
+                }
+            }
+        },
+        "/users/login/{email}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Récupérer un utilisateur par email",
+                "description": "Retourne les informations utilisateur correspondant à l'email donné",
+                "operationId": "938562b850a0968fa5a71fc676f06c38",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Email de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur trouvé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Article": {
+                "title": "Article",
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "user_id",
+                    "published_date",
+                    "views"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID de l'article",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Titre de l'article",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Description de l'article",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "ID de l'utilisateur auteur",
+                        "type": "integer"
+                    },
+                    "published_date": {
+                        "description": "Date de publication",
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "views": {
+                        "description": "Nombre de vues",
+                        "type": "integer"
+                    },
+                    "picture": {
+                        "description": "Nom du fichier image associé",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "City": {
+                "title": "City",
+                "required": [
+                    "ville_id"
+                ],
+                "properties": {
+                    "ville_id": {
+                        "description": "Identifiant de la ville",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "required": [
+                    "id",
+                    "username",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Identifiant unique de l'utilisateur",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "description": "Nom d'utilisateur",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Adresse email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "description": "Mot de passe hashé",
+                        "type": "string"
+                    },
+                    "salt": {
+                        "description": "Salt utilisé pour le hash du mot de passe",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Produits",
+            "description": "Gestion des produits"
+        },
+        {
+            "name": "Villes",
+            "description": "Recherche dans la base des villes"
+        },
+        {
+            "name": "Pages",
+            "description": "Pages HTML classiques"
+        },
+        {
+            "name": "Utilisateurs",
+            "description": "Authentification, inscription, compte, etc."
+        },
+        {
+            "name": "Articles",
+            "description": "Articles"
+        },
+        {
+            "name": "Cities",
+            "description": "Cities"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
+        }
+    ]
+}
