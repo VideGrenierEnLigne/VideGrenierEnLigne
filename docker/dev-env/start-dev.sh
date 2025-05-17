@@ -1,8 +1,9 @@
 GREEN='\033[0;32m'
-NC='\033[0m' 
+NC='\033[0m'
 
-echo -e "${GREEN}→ Lancement de l'environnement de développement...${NC}"
+clear
+echo -e "${GREEN}→ Starting the development environment...${NC}"
 docker-compose up -d --build
 
-echo -e "${GREEN}→ Environnement de développement disponible sur http://localhost:8080/${NC}"
-docker ps
+clear
+echo -e "${GREEN}→ Development environment available at http://localhost:8081/${NC}"
